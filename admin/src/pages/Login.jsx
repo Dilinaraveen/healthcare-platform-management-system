@@ -16,28 +16,28 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onSubmitHandler = async (event) => {
-
     event.preventDefault();
 
     try {
-
-      if(state === 'Admin') {
-        const {data} = await axios.post(backendUrl+'/api/admin/login',{email,password})
-        if(data.success){
-          localStorage.setItem('aToken',data.token)
-          setAtoken(data.token)
-          navigate('/')
-        } else{
-          toast.error(data.message)
+      if (state === "Admin") {
+        const { data } = await axios.post(backendUrl + "/api/admin/login", {
+          email,
+          password,
+        });
+        if (data.success) {
+          localStorage.setItem("aToken", data.token);
+          setAtoken(data.token);
+          toast.success("Login successful");
+          setTimeout(() => {
+            navigate("/admin-dashboard");
+          }, 2000); 
+        } else {
+          toast.error(data.message);
         }
-      }else{
-
+      } else {
       }
-      
-    } catch (error) {
-      
-    }
-  }
+    } catch (error) {}
+  };
 
   return (
     <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center">
