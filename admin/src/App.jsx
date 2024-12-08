@@ -23,12 +23,13 @@ function App() {
       <div className={aToken ? 'flex items-start' : ''}> 
         {aToken && <Sidebar />}
         <Routes>
-          <Route path="/" element={aToken ?<></> : <Login/>} />
+          <Route path="/" element={aToken ?<Dashboard/> : <Login/>} />
           <Route path="/admin-dashboard" element={<Dashboard/>} />
           <Route path="/all-appointments" element={<AllAppointments/>} />
           <Route path="/add-doctor" element={<AddDoctor/>} />
           <Route path="/doctor-list" element={<DoctorsList/>} />
-          <Route path="/login" element={<Login/>} />
+          <Route path="/login" element={aToken ? <Dashboard/>
+          : <Login/>} />
 
         </Routes>
       </div>

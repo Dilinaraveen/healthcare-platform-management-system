@@ -11,7 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { setAtoken, backendUrl } = useContext(AdminContext);
+  const { setAToken, backendUrl } = useContext(AdminContext);
 
   const navigate = useNavigate();
 
@@ -26,17 +26,19 @@ const Login = () => {
         });
         if (data.success) {
           localStorage.setItem("aToken", data.token);
-          setAtoken(data.token);
+          setAToken(data.token);
           toast.success("Login successful");
-          setTimeout(() => {
-            navigate("/admin-dashboard");
-          }, 2000); 
+          navigate("/admin-dashboard");
         } else {
-          toast.error(data.message);
+          console.error("Login failed:", data.message || "Unknown error");
+          toast.error(data.message || "Login failed");
         }
       } else {
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.log(error);
+    }
   };
 
   return (
