@@ -17,7 +17,7 @@ function App() {
   console.log(aToken)
 
   return (
-    <div className="bg-[f8f9fd]">
+    <div className="bg-[#f8f9fd]">
       <ToastContainer />
       {aToken && <Navbar /> }
       <div className={aToken ? 'flex items-start' : ''}> 
@@ -28,8 +28,7 @@ function App() {
           <Route path="/all-appointments" element={<AllAppointments/>} />
           <Route path="/add-doctor" element={<AddDoctor/>} />
           <Route path="/doctor-list" element={<DoctorsList/>} />
-          <Route path="/login" element={aToken ? <Dashboard/>
-          : <Login/>} />
+          <Route path="/login" element={aToken ? <Dashboard/>: <Login/>} />
 
         </Routes>
       </div>
