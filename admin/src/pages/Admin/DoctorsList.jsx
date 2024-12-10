@@ -4,7 +4,8 @@ import { AdminContext } from "../../context/AdminContext";
 import { useEffect } from "react";
 
 const DoctorsList = () => {
-  const { doctors, aToken, getAllDoctors } = useContext(AdminContext);
+  const { doctors, aToken, getAllDoctors, changeAvailability } =
+    useContext(AdminContext);
 
   useEffect(() => {
     if (aToken) {
@@ -19,13 +20,26 @@ const DoctorsList = () => {
       <div className="w-full flex flex-wrap gap-4 pt-5 gap-y-6 ">
         {doctors?.length > 0 ? (
           doctors.map((doctor, index) => (
-            <div key={index} className="border border-indigo-200 rounded-xl max-w-56 overflow-hidden cursor-pointer group">
-              <img src={doctor.image} alt={doctor.name} className="bg-indigo-50 group-hover:bg-primary transition-all duration-500" />
+            <div
+              key={index}
+              className="border border-indigo-200 rounded-xl max-w-56 overflow-hidden cursor-pointer group"
+            >
+              <img
+                src={doctor.image}
+                alt={doctor.name}
+                className="bg-indigo-50 group-hover:bg-primary transition-all duration-500"
+              />
               <div className="p-4">
-                <p className="text-neutral-800 font-medium text-lg">{doctor.name}</p>
+                <p className="text-neutral-800 font-medium text-lg">
+                  {doctor.name}
+                </p>
                 <p className="text-zinc-600 text-sm">{doctor.speciality}</p>
                 <div className="mt-2 flex itemss-center gap-1 text-sm">
-                  <input type="checkbox" checked={doctor.available} />
+                  <input
+                    onChange={() => changeAvailability(doctor._id)}
+                    type="checkbox"
+                    checked={doctor.available}
+                  />
                   <p>Available</p>
                 </div>
               </div>
