@@ -45,7 +45,7 @@ const registerUser = async (req,res) => {
 
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"});
 
-        res.json({success:true,token});
+        res.json({success:true,message:"Account created",token});
         
     } catch (error) {
         console.log(error)
@@ -72,7 +72,7 @@ const loginUser = async (req,res) => {
 
         if(isMatch){
             const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"});
-            res.json({success:true,token});
+            res.json({success:true, message:"Login successful",token});
         } else {
             res.json({success:false, message: "Invalid credentials"});
         }
