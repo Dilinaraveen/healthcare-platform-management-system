@@ -43,7 +43,7 @@ const Navbar = () => {
         ))}
       </ul>
       <div className="flex items-center gap-4">
-        {token && userData ? user(
+        {token && userData ? (
           <div className="flex items-center gap-2 cursor-pointer group relative">
             <img
               className="w-10 h-10 rounded-full cursor-pointer"
