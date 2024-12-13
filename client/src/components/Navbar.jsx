@@ -14,7 +14,7 @@ const navItems = [
 const Navbar = () => {
   const navigate = useNavigate();
 
-  const {token,setToken} = useContext(AppContext)
+  const {token,setToken,userData} = useContext(AppContext)
 
   const [showMenu, setShowMenu] = useState(false);
   const [showCardMenu, setShowCardMenu] = useState(false);
@@ -43,11 +43,11 @@ const Navbar = () => {
         ))}
       </ul>
       <div className="flex items-center gap-4">
-        {token ? (
+        {token && userData ? user(
           <div className="flex items-center gap-2 cursor-pointer group relative">
             <img
               className="w-10 h-10 rounded-full cursor-pointer"
-              src={assets.profile_pic}
+              src={userData.image}
               alt="profile"
             />
             <img onClick={()=>setShowCardMenu(prev => !prev)} className="w-2.5" src={assets.dropdown_icon} alt="dropdown" />
