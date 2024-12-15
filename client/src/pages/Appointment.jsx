@@ -123,9 +123,6 @@ const Appointment = () => {
     getAvailableSlots();
   }, [docInfo]);
 
-  useEffect(() => {
-    console.log("docSlots", docSlots);
-  }, [docSlots]);
 
   return (
     docInfo && (
