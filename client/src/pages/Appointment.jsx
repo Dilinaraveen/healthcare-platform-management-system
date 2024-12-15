@@ -34,9 +34,9 @@ const Appointment = () => {
       
       const date = docSlots[slotIndex][0].datetime;
 
-      let day = date.getDay();
+      let day = date.getDate()
       let month = date.getMonth()+1
-      let year = date.getFullYear();
+      let year = date.getFullYear()
 
       const slotDate = day+"_"+month+"_"+year;
 
@@ -92,10 +92,11 @@ const Appointment = () => {
         });
 
         let day = currentDate.getDate()
-        let month = currentDate.getMonth() + 1
+        let month = currentDate.getMonth()+1;
         let year = currentDate.getFullYear();
 
         const slotDate = day+"_"+month+"_"+year;
+        
         const slotTime = formattedTime;
 
         const isSlotAvailable = docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime) ? false : true;
@@ -106,7 +107,6 @@ const Appointment = () => {
             time: formattedTime,
           });
         }
-
 
         currentDate.setMinutes(currentDate.getMinutes() + 30);
       }
