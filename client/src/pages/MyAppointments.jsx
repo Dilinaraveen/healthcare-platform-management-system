@@ -8,6 +8,21 @@ const MyAppointments = () => {
 
   const [appointments, setAppointments] = useState([]);
 
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const slotDateFormat = (slotDate) => {
+    const dateArray = slotDate.split('_');
+    const day = dateArray[0].trim();
+    const monthIndex = Number(dateArray[1].trim()) - 1; 
+    const year = dateArray[2].trim();
+
+    if (monthIndex < 0 || monthIndex >= months.length) {
+        return "Invalid Month";
+    }
+
+    return `${day} ${months[monthIndex]} ${year}`;
+};
+
   const getUserAppointments = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/user/appointments", {
@@ -59,7 +74,7 @@ const MyAppointments = () => {
                 <span className="text-sm font-semibold text-neutral-700">
                   Date & Time:
                 </span>{" "}
-                {item.slotDate} | {item.slotTime}
+                {slotDateFormat(item.slotDate)} | {item.slotTime}
               </p>
             </div>
             <div></div>
