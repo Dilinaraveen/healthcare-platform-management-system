@@ -13,6 +13,7 @@ userRouter.get('/get-profile', authUser, getProfile);
 userRouter.put('/update-profile', upload.single('image'), authUser, updateProfile);
 userRouter.post('/book-appointment', authUser, bookAppointment);
 userRouter.get('/appointments', authUser, listAppointments);
+userRouter.post('/cancel-appointment', authUser, cancelAppointment);
 
 
 export default userRouter;
