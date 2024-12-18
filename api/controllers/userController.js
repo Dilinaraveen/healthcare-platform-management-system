@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import {v2 as cloudinary} from 'cloudinary';
 import doctorModel from '../models/doctorModel.js';
 import appointmentModel from '../models/appointmentModel.js';
+import Stripe from 'stripe';
+
 
 //API to register a user
 const registerUser = async (req,res) => {
@@ -235,4 +237,41 @@ const cancelAppointment = async (req,res) => {
         res.json({success:false, message:error.message})
     }
 }
-export {registerUser,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment};
+
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
+//API to make payment of appointment using razorpay
+const paymentStripe = async (req, res) => {
+    try {
+      const { amount, currency, userId, docId, appointmentId } = req.body;
+  
+      if (!amount || !currency) {
+        return res.status(400).json({ success: false, message: "Amount and currency are required" });
+      }
+  
+      // Create a payment intent
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Amount in cents (e.g., $10 -> 1000 cents)
+        currency,
+        metadata: {
+          userId,
+          docId,
+          appointmentId,
+        },
+      });
+  
+      res.json({
+        success: true,
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+      });
+    } catch (error) {
+      console.error("Stripe Payment Error:", error.message);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+  
+
+export {registerUser,loginUser,getProfile,updateProfile,bookAppointment,listAppointments,cancelAppointment,paymentStripe};
