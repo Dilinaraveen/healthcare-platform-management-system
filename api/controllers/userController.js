@@ -76,7 +76,7 @@ const loginUser = async (req,res) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(isMatch){
-            const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"});
+            const token = jwt.sign({id: user._id}, process.env.JWT_SECRET);
             res.json({success:true, message:"Login successful",token});
         } else {
             res.json({success:false, message: "Invalid credentials"});
@@ -245,19 +245,21 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 //API to make payment of appointment using razorpay
 const paymentStripe = async (req, res) => {
     try {
-      const { amount, currency, userId, docId, appointmentId } = req.body;
-  
-      if (!amount || !currency) {
-        return res.status(400).json({ success: false, message: "Amount and currency are required" });
+      const {appointmentId } = req.body;
+
+      const appointmentData = await appointmentModel.findById(appointmentId);
+
+      if(!appointmentData || appointmentData.cancelled){
+        return res.json({success:false, message: "Appointment not found"});
       }
   
       // Create a payment intent
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Amount in cents (e.g., $10 -> 1000 cents)
-        currency,
+        amount: Math.round(appointmentData.amount * 100), // Amount in cents (e.g., $10 -> 1000 cents)
+        currency: 'usd',
         metadata: {
-          userId,
-          docId,
+          userId: String(appointmentData.userData._id),
+          docId: String(appointmentData.docData._id),
           appointmentId,
         },
       });
