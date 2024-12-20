@@ -1,5 +1,10 @@
 import React from "react";
-import { useStripe, useElements, CardElement, PaymentElement } from "@stripe/react-stripe-js";
+import {
+  useStripe,
+  useElements,
+  CardElement,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
 
 const CheckoutForm = ({ onPaymentSuccess }) => {
   const stripe = useStripe();
@@ -31,8 +36,10 @@ const CheckoutForm = ({ onPaymentSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement />
+    <form className="w-full flex flex-col gap-5 items-center justify-center" onSubmit={handleSubmit}>
+      <div className="w-1/2" >
+        <PaymentElement />
+      </div>
       <button
         type="submit"
         disabled={!stripe}
