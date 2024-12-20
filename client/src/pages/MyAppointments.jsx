@@ -106,9 +106,7 @@ const MyAppointments = () => {
     }
   }, [token]);
 
-  useEffect(() => {
-    console.log("Current clientSecret:", clientSecret);
-  }, [clientSecret]);
+
 
   return (
     <div>
