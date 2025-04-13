@@ -46,6 +46,7 @@ const Navbar = () => {
         {token && userData ? (
           <div className="flex items-center gap-2 cursor-pointer group relative">
             <img
+              onClick={()=>setShowCardMenu(prev => !prev)}
               className="w-10 h-10 rounded-full cursor-pointer"
               src={userData.image}
               alt="profile"
