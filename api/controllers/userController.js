@@ -305,7 +305,6 @@ const verifyPayment = async (req, res) => {
     // Update payment status to true
     await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true });
 
-    console.log("Payment updated successfully for appointment:", appointmentId);
 
     res.json({ success: true, message: "Payment verified successfully" });
   } catch (error) {
