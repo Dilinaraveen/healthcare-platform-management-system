@@ -5,6 +5,7 @@ import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { DoctorContext } from "../context/DoctorContext";
 
 const Login = () => {
   const [state, setState] = useState("Admin");
@@ -12,6 +13,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const { setAToken, backendUrl } = useContext(AdminContext);
+  const { setDToken } = useContext(DoctorContext);
 
   const navigate = useNavigate();
 
@@ -34,6 +36,19 @@ const Login = () => {
           toast.error(data.message || "Login failed");
         }
       } else {
+        const { data } = await axios.post(backendUrl + "/api/doctor/login", {
+          email,
+          password,
+        });
+        if (data.success) {
+          localStorage.setItem("dToken", data.token);
+          setDToken(data.token);
+          toast.success("Login successful");
+          navigate("/admin-dashboard");
+        } else {
+          console.error("Login failed:", data.message || "Unknown error");
+          toast.error(data.message || "Login failed");
+        }
       }
     } catch (error) {
       toast.error("Something went wrong");
