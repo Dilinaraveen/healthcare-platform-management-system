@@ -47,7 +47,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2 cursor-pointer group relative">
             <img
               onClick={()=>setShowCardMenu(prev => !prev)}
-              className="w-10 h-10 rounded-full cursor-pointer"
+              className="w-10 h-10 rounded-full object-cover cursor-pointer"
               src={userData.image}
               alt="profile"
             />
@@ -94,7 +94,7 @@ const Navbar = () => {
           }  md:hidden right-0 top-0 bottom-0 z-20 overflow-hidden bg-white transition-all duration-300`}
         >
           <div className="flex justify-between items-center px-5 py-6">
-            <img className="w-36" src={assets.logo} alt="" />
+            <img className="w-36 object-cover" src={assets.logo} alt="" />
             <img
               className="w-7"
               src={assets.cross_icon}

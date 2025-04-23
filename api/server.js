@@ -6,6 +6,7 @@ import connectCloudinary from "./config/cloudinary.js";
 import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
+import scheduleReminders from "./config/reminderScheduler.js";
 
 //app config
 const app = express();
@@ -16,6 +17,9 @@ connectCloudinary();
 app.use(express.json());
 app.use(cors());
 connectDB();
+
+//Scheduler
+scheduleReminders(); 
 
 //api endpoints
 app.use("/api/admin", adminRouter);

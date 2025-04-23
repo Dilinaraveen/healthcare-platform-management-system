@@ -6,6 +6,8 @@ import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import Stripe from "stripe";
+import { getAppointmentConfirmationTemplate, getPaymentConfirmationTemplate } from "../config/emailTemplate.js";
+import { sendEmail } from "../config/emailService.js";
 
 //API to register a user
 const registerUser = async (req, res) => {
@@ -178,6 +180,10 @@ const bookAppointment = async (req, res) => {
 
     await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
+     // Send confirmation email to the user
+    const emailTemplate = getAppointmentConfirmationTemplate(userData, docData, slotDate, slotTime);
+    await sendEmail(userData.email, 'Appointment Confirmation', emailTemplate);
+
     res.json({ success: true, message: "Appointment booked" });
   } catch (error) {
     console.log(error);
@@ -305,6 +311,14 @@ const verifyPayment = async (req, res) => {
 
     // Update payment status to true
     await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true });
+
+    // Get user and doctor data for the email
+    const userData = await userModel.findById(userId).select("-password");
+    const docData = await doctorModel.findById(appointment.docId).select("-password");
+
+    // Send payment confirmation email
+    const emailTemplate = getPaymentConfirmationTemplate(userData, docData, appointment);
+    await sendEmail(userData.email, 'Payment Confirmation - Appointment', emailTemplate);
 
 
     res.json({ success: true, message: "Payment verified successfully" });
