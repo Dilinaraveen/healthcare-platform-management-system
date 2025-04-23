@@ -45,7 +45,7 @@ const scheduleReminders = () => {
         // console.log(`📆 Appointment at: ${appointmentTime.format("YYYY-MM-DD HH:mm")}`);
         // console.log(`⏳ Time diff: ${timeDiff}ms for appointment ${appointment._id}`);
 
-        if (timeDiff > 0 && timeDiff <= 35 * 60 * 1000) {
+        if (timeDiff > 0 && timeDiff <= 15 * 60 * 1000) {
           const user = await userModel.findById(appointment.userId);
           const doctor = await doctorModel.findById(appointment.docId);
 

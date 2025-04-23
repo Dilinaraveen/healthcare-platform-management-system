@@ -2,6 +2,7 @@ import doctorModel from "../models/doctorModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
+import userModel from "../models/userModel.js";
 
 //change availability of doctor
 const changeAvailability = async (req,res) => {
@@ -196,4 +197,26 @@ const updateDoctorProfile = async (req,res) => {
     }
 }
 
-export {changeAvailability,doctorList,loginDoctor,appointmentsDoctor,appointmentComplete,appointmentCancel,doctorDashboard,doctorProfile,updateDoctorProfile}
+// API to get unique patients for a doctor
+const doctorPatients = async (req, res) => {
+    try {
+      const { docId } = req.body;
+  
+      // Find all appointments for the doctor
+      const appointments = await appointmentModel.find({ docId });
+  
+      // Extract unique userIds
+      const uniqueUserIds = [...new Set(appointments.map(a => a.userId.toString()))];
+  
+      // Fetch user details (excluding sensitive fields)
+      const patients = await userModel.find({ _id: { $in: uniqueUserIds } }).select("-password");
+  
+      res.json({ success: true, patients });
+    } catch (error) {
+      console.log(error);
+      res.json({ success: false, message: error.message });
+    }
+  };
+  
+
+export {changeAvailability,doctorList,loginDoctor,appointmentsDoctor,appointmentComplete,appointmentCancel,doctorDashboard,doctorProfile,updateDoctorProfile,doctorPatients}
