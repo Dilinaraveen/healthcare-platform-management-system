@@ -12,8 +12,18 @@ const MyAppointments = () => {
   const location = useLocation();
 
   const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const slotDateFormat = (slotDate) => {
@@ -68,10 +78,9 @@ const MyAppointments = () => {
 
   // New function to handle payment
   const handlePayment = async (appointmentId) => {
-    
     try {
       setLoading(true);
-      
+
       const { data } = await axios.post(
         backendUrl + "/api/user/create-payment",
         { appointmentId },
@@ -80,7 +89,7 @@ const MyAppointments = () => {
       console.log("payment data", data);
       if (data.success) {
         // Redirect to Stripe checkout page
-       window.location.href = data.url;
+        window.location.href = data.url;
       } else {
         toast.error(data.message);
       }
@@ -91,7 +100,6 @@ const MyAppointments = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (token) {
@@ -135,8 +143,9 @@ const MyAppointments = () => {
               </div>
               <div></div>
               <div className="flex flex-col gap-2 justify-end">
-                {!item.cancelled && (
-                  item.payment ? (
+                {!item.cancelled &&
+                  !item.isCompleted &&
+                  (item.payment ? (
                     <button
                       className="text-sm text-white text-center sm:min-w-48 py-2 border border-green-500 bg-green-500 rounded-md"
                       disabled
@@ -151,23 +160,37 @@ const MyAppointments = () => {
                     >
                       {loading ? "Processing..." : "Pay Online"}
                     </button>
-                  )
+                  ))}
+                {!item.isCompleted && (
+                  <button
+                    disabled={item.cancelled || item.payment}
+                    onClick={() => cancelAppointment(item._id)}
+                    className={`text-sm text-center sm:min-w-48 py-2 border ${
+                      item.cancelled || item.payment
+                        ? "border-gray-500 text-gray-500"
+                        : "border-red-500 text-red-500"
+                    } rounded-md ${
+                      !item.cancelled && !item.payment ? "hover:text-white" : ""
+                    } ${
+                      !item.cancelled && !item.payment ? "hover:bg-red-500" : ""
+                    } transition-all duration-300`}
+                  >
+                    {item.cancelled
+                      ? "Cancelled"
+                      : item.payment
+                      ? "Cannot Cancel"
+                      : "Cancel Appointment"}
+                  </button>
                 )}
-                <button
-                  disabled={item.cancelled || item.payment}
-                  onClick={() => cancelAppointment(item._id)}
-                  className={`text-sm text-center sm:min-w-48 py-2 border ${
-                    item.cancelled || item.payment
-                      ? "border-gray-500 text-gray-500"
-                      : "border-red-500 text-red-500"
-                  } rounded-md ${
-                    !item.cancelled && !item.payment ? "hover:text-white" : ""
-                  } ${
-                    !item.cancelled && !item.payment ? "hover:bg-red-500" : ""
-                  } transition-all duration-300`}
-                >
-                  {item.cancelled ? "Cancelled" : item.payment ? "Cannot Cancel" : "Cancel Appointment"}
-                </button>
+
+                {item.isCompleted && (
+                  <button
+                    disabled
+                    className="text-sm text-white text-center sm:min-w-48 py-2 border border-blue-500 bg-blue-500 rounded-md"
+                  >
+                    Completed
+                  </button>
+                )}
               </div>
             </div>
           ))}

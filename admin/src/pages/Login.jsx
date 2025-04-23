@@ -44,7 +44,7 @@ const Login = () => {
           localStorage.setItem("dToken", data.token);
           setDToken(data.token);
           toast.success("Login successful");
-          navigate("/admin-dashboard");
+          navigate("/doctor-dashboard");
         } else {
           console.error("Login failed:", data.message || "Unknown error");
           toast.error(data.message || "Login failed");

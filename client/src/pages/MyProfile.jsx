@@ -22,6 +22,8 @@ const MyProfile = () => {
       formData.append('gender', userData.gender);
       formData.append('dob', userData.dob);
 
+      console.log("Gender sending:", userData.gender);
+
       image && formData.append('image', image);
 
       const {data} = await axios.put(backendUrl+'/api/user/update-profile', formData, {headers:{token}});
@@ -136,9 +138,10 @@ const MyProfile = () => {
               onChange={(e) =>
                 setUserData((prev) => ({ ...prev, gender: e.target.value }))
               }
-              value={userData.gender}
+              value={userData.gender || ""}
               className="max-w-20 bg-gray-100 p-1 rounded-md"
             >
+              <option value="" disabled>Select</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>

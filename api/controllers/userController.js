@@ -184,6 +184,7 @@ const bookAppointment = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
 //API for getting all appointments
 const listAppointments = async (req, res) => {
   try {
