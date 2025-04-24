@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { DoctorContext } from "../context/DoctorContext";
 import { FaPlus, FaEdit } from "react-icons/fa";
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MedicalRecordsModal = ({ patient, onClose }) => {
   const {
@@ -13,11 +13,12 @@ const MedicalRecordsModal = ({ patient, onClose }) => {
     backendUrl,
     dToken,
     getProfileData,
-    
   } = useContext(DoctorContext);
 
   const [adding, setAdding] = useState(false);
   const [newDescription, setNewDescription] = useState("");
+  const [editingRecordId, setEditingRecordId] = useState(null);
+  const [editedDescription, setEditedDescription] = useState("");
 
   useEffect(() => {
     if (patient) {
@@ -27,10 +28,11 @@ const MedicalRecordsModal = ({ patient, onClose }) => {
   }, [patient]);
 
   const handleSave = async () => {
-    console.log(profileData)
     const today = new Date();
-    const formattedDate = `${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}`;
-  
+    const formattedDate = `${today.getDate()}_${
+      today.getMonth() + 1
+    }_${today.getFullYear()}`;
+
     const payload = {
       userId: patient._id,
       docId: profileData?._id,
@@ -39,16 +41,16 @@ const MedicalRecordsModal = ({ patient, onClose }) => {
       date: formattedDate,
       description: newDescription,
     };
-  
+
     try {
       const { data } = await axios.post(
-        backendUrl+'/api/doctor/create-medical-record',
+        backendUrl + "/api/doctor/create-medical-record",
         payload,
         {
-          headers: { dToken},
+          headers: { dToken },
         }
       );
-  
+
       if (data.success) {
         setMedicalRecords([data.record, ...medicalRecords]); // update state
         setNewDescription("");
@@ -59,10 +61,41 @@ const MedicalRecordsModal = ({ patient, onClose }) => {
       }
     } catch (error) {
       console.error("Error saving record:", error);
-      toast.error("Failed to create medical record.");
+      toast.error(error.message);
     }
   };
-  
+
+  const handleUpdate = async (recordId) => {
+    setAdding(false)
+    try {
+      const { data } = await axios.put(
+        `${backendUrl}/api/doctor/update-medical-record/${recordId}`,
+        {
+          description: editedDescription,
+          date: medicalRecords.find((r) => r._id === recordId)?.date || "", // send existing date
+        },
+        {
+          headers: { dToken },
+        }
+      );
+
+      if (data.success) {
+        const updatedList = medicalRecords.map((record) =>
+          record._id === recordId ? data.record : record
+        );
+        setMedicalRecords(updatedList);
+        toast.success("Medical record updated.");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error updating record:", error);
+      toast.error("Failed to update record.");
+    }
+
+    setEditingRecordId(null);
+    setEditedDescription("");
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
@@ -124,27 +157,66 @@ const MedicalRecordsModal = ({ patient, onClose }) => {
               key={item._id}
               className="flex items-start justify-between bg-white p-4 mb-4 rounded-md shadow-sm border w-full"
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-4 w-full">
                 <img
                   className="w-10 h-10 rounded-full object-cover"
                   src={item?.userData?.image}
                   alt={item?.userData?.name || "Patient"}
                 />
-                <div>
+                <div className="flex-1 w-full">
                   <p className="font-semibold text-gray-800">
                     {item.userData.name}
                   </p>
                   <p className="text-sm text-gray-500">{item.date}</p>
-                  <p className="mt-1 text-gray-700">{item.description}</p>
+
+                  {editingRecordId === item._id ? (
+                    <div className="w-full">
+                      <div className="w-full">
+                        <textarea
+                          rows={3}
+                          className="w-full block border border-gray-300 rounded mt-1 p-2 resize-none"
+                          value={editedDescription}
+                          onChange={(e) => setEditedDescription(e.target.value)}
+                        />
+                      </div>
+
+
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => handleUpdate(item._id)}
+                          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingRecordId(null);
+                            setEditedDescription("");
+                          }}
+                          className="px-3 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-100 text-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mt-1 text-gray-700">{item.description}</p>
+                  )}
                 </div>
               </div>
-              <button
-                onClick={() => console.log("Edit:", item._id)}
-                className="text-gray-500 hover:text-gray-700"
-                title="Edit Record"
-              >
-                <FaEdit />
-              </button>
+
+              {editingRecordId !== item._id && (
+                <button
+                  onClick={() => {
+                    setEditingRecordId(item._id);
+                    setEditedDescription(item.description);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                  title="Edit Record"
+                >
+                  <FaEdit />
+                </button>
+              )}
             </div>
           ))}
 
