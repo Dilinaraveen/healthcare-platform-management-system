@@ -2,42 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+
 
 const MyAppointments = () => {
-  const { backendUrl, token, getDoctorsData } = useContext(AppContext);
+  const { backendUrl, token, getDoctorsData,slotDateFormat } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  const slotDateFormat = (slotDate) => {
-    const dateArray = slotDate.split("_");
-    const day = dateArray[0].trim();
-    const monthIndex = Number(dateArray[1].trim()) - 1;
-    const year = dateArray[2].trim();
-
-    if (monthIndex < 0 || monthIndex >= months.length) {
-      return "Invalid Month";
-    }
-
-    return `${day} ${months[monthIndex]} ${year}`;
-  };
+  
 
   const getUserAppointments = async () => {
     try {

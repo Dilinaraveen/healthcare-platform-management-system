@@ -12,7 +12,36 @@ const AppContextProvider = (props) => {
     const [doctors, setDoctors] = useState([]);
     const [token, setToken] = useState(localStorage.getItem('token')? localStorage.getItem('token') : '');
     const [userData, setUserData] = useState(false);
+    const [userMedicalRecords, setUserMedicalRecords] = useState([]);
 
+
+    const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+    
+      const slotDateFormat = (slotDate) => {
+        const dateArray = slotDate.split("_");
+        const day = dateArray[0].trim();
+        const monthIndex = Number(dateArray[1].trim()) - 1;
+        const year = dateArray[2].trim();
+    
+        if (monthIndex < 0 || monthIndex >= months.length) {
+          return "Invalid Month";
+        }
+    
+        return `${day} ${months[monthIndex]} ${year}`;
+      };
     
     const getDoctorsData = async () => {
 
@@ -49,13 +78,39 @@ const AppContextProvider = (props) => {
         }
     }
 
+    const getMedicalRecordsByUser = async (userId) => {
+        if (!userId) {
+            toast.error("User ID is required to fetch medical records.");
+            return;
+        }
+    
+        try {
+            const { data } = await axios.get(
+                `${backendUrl}/api/user/user-medical-records/${userId}`,
+                { headers: { token } }
+            );
+    
+            if (data.success) {
+                setUserMedicalRecords(data.records);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching user medical records:", error);
+            toast.error("Failed to load medical records.");
+        }
+    };
+    
+
     const value = {
         doctors, getDoctorsData,
         currencySymbol,
         token,setToken,
         backendUrl,
         userData,setUserData,
-        loadUserProfileData
+        loadUserProfileData,
+        userMedicalRecords, setUserMedicalRecords,getMedicalRecordsByUser,
+        slotDateFormat
     }
 
 

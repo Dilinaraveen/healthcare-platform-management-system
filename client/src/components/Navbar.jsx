@@ -69,6 +69,12 @@ const Navbar = () => {
                     My Appointments
                   </p>
                   <p
+                    onClick={() => {navigate("records"); setShowCardMenu(false)}}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    My Records
+                  </p>
+                  <p
                     onClick={() => { logout(); setShowCardMenu(false)}}
                     className="hover:text-red-700 cursor-pointer text-red-500"
                   >
