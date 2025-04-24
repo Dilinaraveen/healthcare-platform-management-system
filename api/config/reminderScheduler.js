@@ -24,6 +24,7 @@ const scheduleReminders = () => {
       const allAppointments = await appointmentModel.find({
         slotDate: formattedToday,
         cancelled: false,
+        reminderSent: false,
         isCompleted: false,
       });
       
