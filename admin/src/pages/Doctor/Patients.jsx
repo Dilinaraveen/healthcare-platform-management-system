@@ -56,7 +56,7 @@ function Patients() {
               onClick={() => handleView(item)}
               className="w-fit text-blue-500 text-xs font-medium border border-blue-500 px-2.5 py-0.5 rounded-full hover:bg-blue-500 hover:text-white"
             >
-              View
+              View Records
             </button>
           </div>
         ))}

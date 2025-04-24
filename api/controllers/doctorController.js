@@ -327,5 +327,6 @@ export {
   updateDoctorProfile,
   doctorPatients,
   createMedicalRecord,
-  getMedicalRecordsByDoctor
+  getMedicalRecordsByDoctor,
+  updateMedicalRecord
 };

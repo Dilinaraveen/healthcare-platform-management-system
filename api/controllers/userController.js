@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import medicalRecordModel from "../models/medicalRecordModel.js";
 import Stripe from "stripe";
 import { getAppointmentConfirmationTemplate, getPaymentConfirmationTemplate } from "../config/emailTemplate.js";
 import { sendEmail } from "../config/emailService.js";
@@ -328,7 +329,31 @@ const verifyPayment = async (req, res) => {
   }
 };
 
-// Make sure to export the new functions
+const getMedicalRecordsByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required.",
+      });
+    }
+
+    const records = await medicalRecordModel.find({ userId });
+
+    res.json({
+      success: true,
+      message: "Medical records for user fetched successfully.",
+      records,
+    });
+  } catch (error) {
+    console.error("Error fetching user's medical records:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 export {
   registerUser,
   loginUser,
@@ -339,4 +364,5 @@ export {
   cancelAppointment,
   paymentStripe,
   verifyPayment,
+  getMedicalRecordsByUser
 };
