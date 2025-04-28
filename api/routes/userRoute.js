@@ -1,5 +1,5 @@
 import express from "express";
-import { getProfile, loginUser, registerUser, updateProfile, bookAppointment, listAppointments, cancelAppointment, paymentStripe, verifyPayment, getMedicalRecordsByUser } from "../controllers/userController.js";
+import { getProfile, loginUser, registerUser, updateProfile, bookAppointment, listAppointments, cancelAppointment, paymentStripe, verifyPayment, getMedicalRecordsByUser, getMessages } from "../controllers/userController.js";
 import authUser from "../middlewares/authUser.js";
 import upload from "../middlewares/multer.js";
 
@@ -17,6 +17,8 @@ userRouter.post('/cancel-appointment', authUser, cancelAppointment);
 userRouter.post('/create-payment', authUser,  paymentStripe);
 userRouter.post('/verify-payment', authUser, verifyPayment);
 userRouter.get('/user-medical-records/:userId', authUser, getMedicalRecordsByUser);
+userRouter.get("/messages/:userId", getMessages);
 
+  
 
 export default userRouter;

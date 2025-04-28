@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Doctors from "./pages/Doctors";
@@ -15,8 +15,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Records from "./pages/Records";
+import FloatingChatBox from "./components/FloatingChatBox";
+import { AppContext } from "./context/AppContext";
 
 const App = () => {
+
+  const { userData } = useContext(AppContext);
+
   return (
     <div className="mx-4 sm:mx-[10%]">
       <ToastContainer />
@@ -36,6 +41,7 @@ const App = () => {
         <Route path="/records" element={<Records />} />
       </Routes>
       <Footer />
+      {userData && <FloatingChatBox userId={userData._id} />}
     </div>
   );
 };

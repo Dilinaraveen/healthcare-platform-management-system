@@ -9,6 +9,7 @@ import medicalRecordModel from "../models/medicalRecordModel.js";
 import Stripe from "stripe";
 import { getAppointmentConfirmationTemplate, getPaymentConfirmationTemplate } from "../config/emailTemplate.js";
 import { sendEmail } from "../config/emailService.js";
+import Message from "../models/messageModel.js";
 
 //API to register a user
 const registerUser = async (req, res) => {
@@ -353,6 +354,27 @@ const getMedicalRecordsByUser = async (req, res) => {
   }
 };
 
+const getMessages = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const messages = await Message.find({
+      $or: [
+        { from: userId, to: "admin" },
+        { from: "admin", to: userId }
+      ]
+    }).sort({ createdAt: 1 });
+    
+    const formattedMessages = messages.map(msg => ({
+      from: msg.from === userId ? "user" : "admin",
+      text: msg.text
+    }));
+
+    res.status(200).json(formattedMessages);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 export {
   registerUser,
@@ -364,5 +386,6 @@ export {
   cancelAppointment,
   paymentStripe,
   verifyPayment,
-  getMedicalRecordsByUser
+  getMedicalRecordsByUser,
+  getMessages
 };

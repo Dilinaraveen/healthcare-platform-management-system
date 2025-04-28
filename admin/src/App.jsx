@@ -15,6 +15,7 @@ import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
 import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
 import Patients from "./pages/Doctor/Patients";
+import Messages from "./pages/Admin/Messages";
 
 function App() {
   const { aToken } = useContext(AdminContext);
@@ -24,9 +25,9 @@ function App() {
   return (
     <div className="bg-[#f8f9fd]">
       <ToastContainer />
-      {aToken || dToken && <Navbar /> }
+      {(aToken || dToken) && <Navbar /> }
       <div className={(aToken || dToken) ? 'flex items-start' : ''}> 
-        {aToken || dToken && <Sidebar />}
+        {(aToken || dToken) && <Sidebar />}
         <Routes>
           <Route path="/" element={aToken ?<Dashboard/> : <Login/>} />
           <Route path="/admin-dashboard" element={<Dashboard/>} />
@@ -39,6 +40,7 @@ function App() {
           <Route path='/doctor-appointments' element={<DoctorAppointments/>} />
           <Route path='/doctor-profile' element={<DoctorProfile/>} />
           <Route path='/patients' element={<Patients/>} />
+          <Route path='/messages' element={<Messages/>} />
 
         </Routes>
       </div>

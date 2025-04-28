@@ -5,6 +5,7 @@ import doctorModel from "../models/doctorModel.js";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
+import Message from "../models/messageModel.js";
 
 //Adding a new doctor
 const addDoctor = async (req, res) => {
@@ -161,5 +162,46 @@ const adminDashboard = async (req,res) => {
     }
 }
 
+//API to get users with messages
+const usersWithMessages = async (req, res) => {
+  try {
+    // Get users who have sent messages
+    const uniqueUsers = await Message.distinct("from", {
+      from: { $ne: "admin" },
+    });
 
-export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, cancelAppointment, adminDashboard };
+    // Get user details from your User model
+    const users = await userModel.find({ _id: { $in: uniqueUsers } }).select(
+      "_id name email"
+    );
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//API to get messages of a user
+const getMessages = async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const messages = await Message.find({
+        $or: [
+          { from: userId, to: "admin" },
+          { from: "admin", to: userId },
+        ],
+      }).sort({ createdAt: 1 });
+  
+      // Format messages for the client
+      const formattedMessages = messages.map((msg) => ({
+        from: msg.from === "admin" ? "admin" : "user",
+        text: msg.text,
+      }));
+  
+      res.status(200).json(formattedMessages);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, cancelAppointment, adminDashboard, usersWithMessages, getMessages };
