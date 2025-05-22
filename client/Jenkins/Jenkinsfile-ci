@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "yourdockerhub/healthcare-client"
+        SONARQUBE = "SonarQube"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                dir('client') {
+                    sh 'ls -la'
+                }
+            }
+        }
+
+        stage('Install & Build') {
+            steps {
+                dir('client') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('client') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'sonar-scanner'
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('client') {
+                    sh "docker build -t $IMAGE_NAME ."
+                }
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $IMAGE_NAME
+                    """
+                }
+            }
+        }
+    }
+}
