@@ -1,26 +1,23 @@
+
 pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "yourdockerhub/healthcare-client"
-        SONARQUBE = "SonarQube"
+        SONARQUBE = 'SonarQube'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Git Checkout') {
             steps {
-                checkout scm
-                dir('client') {
-                    sh 'ls -la'
-                }
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/Dilinaraveen/healthcare-platform-management-system.git'
             }
         }
 
-        stage('Install & Build') {
+        stage('Install & Build (client only)') {
             steps {
                 dir('client') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                    bat 'npm install'
+                    bat 'npm run build'
                 }
             }
         }
@@ -28,30 +25,26 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 dir('client') {
-                    withSonarQubeEnv('SonarQube') {
-                        sh 'sonar-scanner'
+                    withSonarQubeEnv("${SONARQUBE}") {
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                            bat "sonar-scanner -Dsonar.login=%SONAR_TOKEN%"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build and Push Docker Image') {
+            steps {
+                dir('client') {
+                    withDockerRegistry(credentialsId: 'docker-hub', toolName: 'Default') {
+                        bat 'docker build -t healthcare-client:latest .'
+                        bat 'docker tag healthcare-client:latest dilina/healthcare-client:latest'
+                        bat 'docker push dilina/healthcare-client:latest'
                     }
                 }
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                dir('client') {
-                    sh "docker build -t $IMAGE_NAME ."
-                }
-            }
-        }
-
-        stage('Push to DockerHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push $IMAGE_NAME
-                    """
-                }
-            }
-        }
     }
 }
+

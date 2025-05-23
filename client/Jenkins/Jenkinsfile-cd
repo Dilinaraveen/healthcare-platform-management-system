@@ -2,24 +2,31 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "yourdockerhub/healthcare-client"
-        EC2_HOST = "ec2-user@<EC2-PUBLIC-IP>"
+        IMAGE_NAME = "dilina/healthcare-client:latest"
+        EC2_HOST = "ec2-user@13.203.78.248"
     }
-
     stages {
         stage('Deploy to EC2') {
             steps {
                 sshagent(['ec2-key']) {
                     sh """
-                        ssh $EC2_HOST "
+                        ssh -o StrictHostKeyChecking=no $EC2_HOST '
                             docker pull $IMAGE_NAME &&
                             docker stop client-app || true &&
                             docker rm client-app || true &&
                             docker run -d --name client-app -p 80:80 $IMAGE_NAME
-                        "
+                        '
                     """
                 }
             }
+        }
+    }
+    post {
+        success {
+            echo "✅ Deployed successfully to EC2!"
+        }
+        failure {
+            echo "❌ Deployment failed. Check SSH access and Docker status."
         }
     }
 }
